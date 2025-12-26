@@ -1,0 +1,11 @@
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+generator client { provider = "prisma-client-js" }
+
+model User { id String @id @default(uuid()) email String @unique password String role Role @default(USER) stripeCustomerId String? subscriptionStatus String? createdAt DateTime @default(now()) services Service[] messagesSent Message[] @relation("SentMessages") messagesRecv Message[] @relation("ReceivedMessages") }
+
+model Service { id String @id @default(uuid()) title String description String providerId String provider User @relation(fields: [providerId], references: [id]) isPrivate Boolean @default(true) price Float }
+
+model Message { id String @id @default(uuid()) content String senderId String receiverId String sender User @relation("SentMessages", fields: [senderId], references: [id]) receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id]) createdAt DateTime @default(now()) }
+
+enum Role { USER PROVIDER ADMIN }
